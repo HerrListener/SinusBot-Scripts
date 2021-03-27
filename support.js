@@ -24,14 +24,18 @@ registerPlugin({
     }
 
     isSupporter = (client) => {
-        return client.getServerGroups().includes(29)
+        return (client.getServerGroups().find(group => group.id() == 29)) ? true : false
     }
 
-    event.on("clientMove", async event => {
+    event.on("clientMove", event => {
         
         const toChannel = event.toChannel
 
-        if(toChannel && toChannel.id() == config.supportchannel /*&& !isSupporter(event.client)*/) {
+        if(toChannel && toChannel.id() == config.supportchannel) {
+            if(isSupporter(event.client)) {
+                event.client.chat("[COLOR=RED]Supporter selbst können kein Support anfordern[/COLOR]")
+                return
+            }
             getSupporter().forEach(async client => {
                 client.chat((config.supportmsg.includes("%user%")) ? config.supportmsg.replace("%user%", event.client.name()) : config.supportmsg)
             })
