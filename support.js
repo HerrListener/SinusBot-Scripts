@@ -13,7 +13,7 @@ registerPlugin({
         title: "Lege eine Support Naricht für die Supporter fest.",
         type: "string"
     }]
-}, (_, config) => {
+}, async (_, config) => {
    
     const event = require('event')
     const engine = require('engine')
@@ -27,20 +27,28 @@ registerPlugin({
         return client.getServerGroups().includes(29)
     }
 
-    getSupportChannel = () => {
-        return backend.getChannelByID(config.supportchannel)
-    }
-
-    event.on("clientMove", event => {
+    event.on("clientMove", async event => {
         
         const toChannel = event.toChannel
 
         if(toChannel && toChannel.id() == config.supportchannel /*&& !isSupporter(event.client)*/) {
-            getSupporter().forEach(client => {
+            getSupporter().forEach(async client => {
                 client.chat((config.supportmsg.includes("%user%")) ? config.supportmsg.replace("%user%", event.client.name()) : config.supportmsg)
             })
         } 
 
     })
+
+    setInterval(async () => {
+
+        const channel = backend.getChannelByID(config.supportchannel)
+
+        if(getSupporter().length == 0) {
+            if(channel.maxClients() > 0) channel.setMaxClients(0)
+        } else {
+            if(channel.maxClients() == 0) channel.setMaxClients(2)
+        }
+
+    }, 1000)
    
 })
