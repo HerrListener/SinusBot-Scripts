@@ -23,7 +23,7 @@ registerPlugin({
 
         const channel = backend.getChannelByID(config.onlineuser)
 
-        channel.setName(`[cspacer]Derzeit sind ${backend.getClients().filter(client => client.id() != backend.getBotClientID()).length} User online`)
+        channel.setName(`[cspacer]Derzeit sind ${backend.getClients().filter(client => !client.getServerGroups().find(group => group.id() == 40)).length} User online`)
 
     }, 1000*3)
    
